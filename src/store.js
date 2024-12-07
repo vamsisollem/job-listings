@@ -2,14 +2,16 @@ import {create} from 'zustand';
 
 const store = (set,get) => ({
 jobs: [],
-setJobs: (data) => set(jobs= {data}),
-fetchJobs: ()=>{
+filteredJobs: [],
+setJobs: (data) => set({jobs :data,filteredJobs: data}),
+filterJobs: (data)=> set({filteredJobs: data}),
+fetchJobs: async()=>{
     try{
-        const response= fetch('/data.json');
+        const response= await fetch('/data.json');
         if(!response.ok){
             console.log('Error fetching the data')
         }
-        const data = response.json();
+        const data = await response.json();
         if(data){
             get().setJobs(data)
         }
@@ -17,6 +19,12 @@ fetchJobs: ()=>{
     catch(error){
         console.error('Error:', error)
     }
+},
+handleFilter: (filter)=>{
+    const filtered = get().jobs.filter((job) =>{
+        return job.languages.includes(filter)
+    })
+    get().filterJobs(filtered)
 }
 })
 
